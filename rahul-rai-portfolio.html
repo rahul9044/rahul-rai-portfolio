@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rahul Rai — Build Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+
+    --navy: #211f1c;
+    --navy-deep: #1a1816;
+    --panel: #272421;
+    --ink: #f2efe9;
+    --ink-dim: #b9b3a8;
+    --ink-faint: #858076;
+    --line: #3a362f;
+    --accent: #847cff;
+    --accent-soft: #847cff22;
+    --live: #e8a33d;
+    --font-head: "Space Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "Inter", "Helvetica Neue", Arial, sans-serif;
+    --font-mono: "JetBrains Mono", "SF Mono", Consolas, monospace;
+  }
+  :root:not([data-theme="light"]) { color-scheme: dark; }
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --navy: #f5f3ee; --navy-deep: #ffffff; --panel: #ffffff;
+      --ink: #1c1a17; --ink-dim: #534d43; --ink-faint: #8a8375;
+      --line: #ddd7c9; --accent: #5b4fe0; --accent-soft: #5b4fe014; --live: #b3730e;
+    }
+  }
+  :root[data-theme="light"] {
+    --navy: #f5f3ee; --navy-deep: #ffffff; --panel: #ffffff;
+    --ink: #1c1a17; --ink-dim: #534d43; --ink-faint: #8a8375;
+    --line: #ddd7c9; --accent: #5b4fe0; --accent-soft: #5b4fe014; --live: #b3730e;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  body {
+    margin: 0; background: var(--navy); color: var(--ink);
+    font-family: var(--font-body); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent); color: #fff; }
+
+  a { color: var(--accent); text-decoration: none; }
+  a.linklike { text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line); }
+  a.linklike:hover { text-decoration-color: var(--accent); }
+
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Header ---------- */
+  header.hero {
+    padding: 72px 0 40px;
+    border-bottom: 1px solid var(--line);
+  }
+  .kicker {
+    font-family: var(--font-mono); font-size: 13px; color: var(--ink-faint);
+    margin: 0 0 18px; letter-spacing: 0.02em;
+  }
+  h1 {
+    font-family: var(--font-head); font-weight: 700;
+    font-size: clamp(2.3rem, 7vw, 3.4rem); line-height: 1.04;
+    margin: 0 0 14px; letter-spacing: -0.01em;
+  }
+  .role-line {
+    font-size: 1.1rem; color: var(--ink-dim); max-width: 46ch; margin: 0 0 28px;
+  }
+  .contact-row {
+    display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--ink-dim);
+  }
+  .contact-row a { color: var(--ink-dim); }
+  .contact-row a:hover { color: var(--accent); }
+
+  /* ---------- Stat strip ---------- */
+  .stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px; background: var(--line);
+    border: 1px solid var(--line);
+    margin: 40px 0 0;
+  }
+  .stat { background: var(--navy); padding: 20px 18px; }
+  .stat .num {
+    font-family: var(--font-head); font-weight: 600; font-size: 1.7rem; color: var(--ink);
+    display: block; margin-bottom: 4px;
+  }
+  .stat .label { font-size: 13px; color: var(--ink-faint); }
+
+  /* ---------- Section scaffolding ---------- */
+  section { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type { border-bottom: none; }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 28px; }
+  h2 {
+    font-family: var(--font-head); font-weight: 600; font-size: 1.5rem; margin: 0;
+  }
+  .section-note { font-size: 13px; color: var(--ink-faint); text-align: right; max-width: 30ch; }
+
+  /* ---------- Stack chips ---------- */
+  .chipset { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-dim);
+    border: 1px solid var(--line); padding: 5px 10px; border-radius: 4px;
+    background: var(--panel);
+  }
+
+  /* ---------- Project groups ---------- */
+  .group { margin-bottom: 44px; }
+  .group:last-child { margin-bottom: 0; }
+  .group-title {
+    font-size: 13px; font-weight: 600; color: var(--accent);
+    margin: 0 0 16px; padding-left: 14px; border-left: 2px solid var(--accent);
+  }
+  .proj {
+    position: relative; padding: 18px 20px 18px 20px;
+    border: 1px solid var(--line); border-left: 3px solid var(--line);
+    background: var(--panel); border-radius: 3px; margin-bottom: 10px;
+  }
+  .proj:last-child { margin-bottom: 0; }
+  .proj.live { border-left-color: var(--live); }
+  .proj-top {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 12px; margin-bottom: 6px;
+  }
+  .proj-name { font-family: var(--font-head); font-weight: 600; font-size: 1.05rem; }
+  .proj-tag { font-size: 12px; color: var(--ink-faint); }
+  .status-dot {
+    display: inline-flex; align-items: center; gap: 5px; font-size: 11.5px;
+    font-family: var(--font-mono); color: var(--live); margin-left: auto;
+  }
+  .status-dot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--live); display: inline-block; }
+  .proj-desc { font-size: 14.5px; color: var(--ink-dim); margin: 6px 0 10px; max-width: 64ch; }
+  .proj-meta {
+    display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .proj-meta strong { color: var(--ink-dim); font-weight: 500; }
+  .proj-links { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13.5px; }
+  .brand-list { font-size: 13.5px; color: var(--ink-faint); margin-top: 8px; }
+  .brand-list b { color: var(--ink-dim); font-weight: 500; }
+
+  /* ---------- Timeline ---------- */
+  .tl-item { display: grid; grid-template-columns: 110px 1fr; gap: 18px; padding: 16px 0; border-top: 1px solid var(--line); }
+  .tl-item:first-child { border-top: none; }
+  .tl-date { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-faint); padding-top: 2px; }
+  .tl-role { font-family: var(--font-head); font-weight: 600; font-size: 1rem; margin: 0 0 3px; }
+  .tl-co { font-size: 13.5px; color: var(--ink-faint); margin-bottom: 6px; }
+  .tl-desc { font-size: 14px; color: var(--ink-dim); max-width: 60ch; }
+
+  footer {
+    padding: 48px 0 calc(56px + env(safe-area-inset-bottom, 0px));
+    font-size: 13.5px; color: var(--ink-faint);
+  }
+  footer a { color: var(--ink-dim); }
+  .theme-toggle {
+    position: fixed; top: calc(16px + env(safe-area-inset-top, 0px)); right: 16px;
+    background: var(--panel); border: 1px solid var(--line); color: var(--ink-dim);
+    font-family: var(--font-mono); font-size: 11.5px; padding: 6px 10px; border-radius: 4px;
+    cursor: pointer; z-index: 10;
+  }
+
+  @media (max-width: 520px) {
+    header.hero { padding: 56px 0 32px; }
+    section { padding: 40px 0; }
+    .tl-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">LIGHT MODE</button>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="kicker">Build log &mdash; 2020&ndash;2026</p>
+    <h1>Rahul Rai</h1>
+    <p class="role-line">Senior Mobile Engineer building production Flutter &amp; native Android systems &mdash; from on-device AI to IoT hardware to multi-brand commercial platforms shipped across four continents.</p>
+    <div class="contact-row">
+      <span>Kanpur, India</span>
+      <a href="mailto:rahul.rai955@gmail.com" class="linklike">rahul.rai955@gmail.com</a>
+      <a href="tel:+917905360342" class="linklike">+91 7905360342</a>
+      <a href="https://linkedin.com/in/rahul-rai-822376176" class="linklike" target="_blank" rel="noopener">linkedin.com/in/rahul-rai-822376176</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="num">6+ yrs</span><span class="label">production engineering</span></div>
+      <div class="stat"><span class="num">50+</span><span class="label">apps shipped</span></div>
+      <div class="stat"><span class="num">100,000+</span><span class="label">users, one solo build</span></div>
+      <div class="stat"><span class="num">4</span><span class="label">countries served</span></div>
+    </div>
+  </header>
+
+  <section id="stack">
+    <div class="section-head">
+      <h2>Core stack</h2>
+    </div>
+    <div class="chipset">
+      <span class="chip">Flutter</span><span class="chip">Dart</span><span class="chip">BLoC</span>
+      <span class="chip">Android SDK</span><span class="chip">Kotlin</span><span class="chip">Java</span>
+      <span class="chip">Kotlin Coroutines</span><span class="chip">Dagger/Hilt</span>
+      <span class="chip">Node.js</span><span class="chip">REST APIs</span>
+      <span class="chip">MVVM</span><span class="chip">Clean Architecture</span>
+      <span class="chip">TensorFlow Lite</span><span class="chip">Google Document AI</span>
+      <span class="chip">Bluetooth (BLE)</span><span class="chip">GPS/IoT</span>
+      <span class="chip">Firebase</span><span class="chip">SQL</span>
+    </div>
+  </section>
+
+  <section id="projects">
+    <div class="section-head">
+      <h2>Projects</h2>
+      <p class="section-note">Grouped the way I actually think about this work &mdash; not a flat list.</p>
+    </div>
+
+    <div class="group">
+      <p class="group-title">Flagship solo build</p>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Salary Slip</span>
+          <span class="proj-tag">HR &amp; Payroll &middot; Native Android</span>
+          <span class="status-dot">100K+ USERS</span>
+        </div>
+        <p class="proj-desc">Independently architected, built, and scaled a payroll platform from zero to 100,000+ organic users with no marketing spend. Dual-sided: an employee app (GPS-based attendance, payroll, business tools) plus a companion employer/admin app with role-based access.</p>
+        <div class="proj-meta"><strong>Solo</strong> &middot; built during tenure at Inventics Software Pvt Ltd</div>
+        <p class="proj-desc" style="margin-top:-4px;">The original Android listing reached 280,000+ downloads before being relisted under a new package; the historical record is independently archived below.</p>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.salaryslip.employee" target="_blank" rel="noopener" class="linklike">Employee app &middot; Google Play →</a>
+          <a href="https://play.google.com/store/apps/details?id=com.ispl.salaryslipemployer" target="_blank" rel="noopener" class="linklike">Employer app &middot; Google Play →</a>
+          <a href="https://www.appbrain.com/app/salary-slip-employee-app/com.inventics.salaryslipEmployee" target="_blank" rel="noopener" class="linklike">AppBrain archive (280K+ history) →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="group-title">IoT &amp; hardware logistics</p>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Blue Star ELD</span>
+          <span class="proj-tag">Fleet Management &middot; Native Android</span>
+          <span class="status-dot">4.8/5 &middot; 5,000+ DL</span>
+        </div>
+        <p class="proj-desc">FMCSA-compliant fleet management app built from scratch, integrating ELD hardware over Bluetooth (BLE) for real-time GPS tracking and automated Hours-of-Service violation logging. White-labeled for multiple US transport companies.</p>
+        <div class="proj-meta"><strong>Client project</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=app.bluestareld.driver" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="group-title">Enterprise AI &amp; computer vision</p>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">RestusPOS</span>
+          <span class="proj-tag">Restaurant Tech / AI</span>
+        </div>
+        <p class="proj-desc">Built the Warehouse Management module &mdash; inventory, inventory scanning, transfers, customer/supplier orders, supplier management, damaged-stock tracking, receiving. Contributed invoice and reconciliation features using Google Document AI for automated data extraction.</p>
+        <div class="proj-meta"><strong>Team project</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.restus.zeus_client_mobile" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">AGView</span>
+          <span class="proj-tag">AI / Agriculture &middot; iOS</span>
+        </div>
+        <p class="proj-desc">Integrated a pre-trained TensorFlow Lite computer vision model into a client iOS application for on-device agricultural image analysis.</p>
+        <div class="proj-meta"><strong>Client project</strong></div>
+        <div class="proj-links">
+          <a href="https://apps.apple.com/us/app/agview/id6478491448" target="_blank" rel="noopener" class="linklike">App Store →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="group-title">Multi-tenant international commercial systems</p>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">IRIS Signage</span>
+          <span class="proj-tag">Digital Signage &middot; Flutter Full-Stack</span>
+        </div>
+        <p class="proj-desc">Full-stack multi-tenant digital signage platform &mdash; a Flutter Web admin panel with role-based access (super admin, business owner, manager), a Flutter TV display app, and a Node.js backend engineered from scratch. Live across 5 businesses in Cyprus.</p>
+        <div class="proj-meta"><strong>Solo</strong> &middot; built from scratch &middot; Virtual Employee Pvt. Ltd.</div>
+      </div>
+
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Restaurant Ordering Platforms</span>
+          <span class="proj-tag">Food Ordering &middot; Flutter, Web + Android + iOS</span>
+        </div>
+        <p class="proj-desc">Full-stack ordering platforms for a family of Cyprus food brands &mdash; menus, ordering, delivery/takeaway, rewards, API integrations. Plus a website-only build for Papa John's Cyprus.</p>
+        <div class="proj-meta"><strong>Solo</strong> &middot; built from scratch &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="brand-list"><b>Brands:</b> BlueSub, Heraclis, Volta, Goc (rebranded as GMI Cafe), Chopsticks, China Spice, Papa John's Cyprus (web only)</div>
+        <div class="proj-links">
+          <a href="https://bluesub.com.cy/#/landingPage" target="_blank" rel="noopener" class="linklike">BlueSub (Web)</a>
+          <a href="https://play.google.com/store/apps/details?id=com.bluesub.app" target="_blank" rel="noopener" class="linklike">BlueSub (Play)</a>
+          <a href="https://apps.apple.com/us/app/bluesub/id6801431334" target="_blank" rel="noopener" class="linklike">BlueSub (App Store)</a>
+          <a href="https://heraclis.restuspos.com:8443/#/landingPage" target="_blank" rel="noopener" class="linklike">Heraclis (Web)</a>
+          <a href="https://play.google.com/store/apps/details?id=com.heraclis.app" target="_blank" rel="noopener" class="linklike">Heraclis (Play)</a>
+          <a href="https://volta.restuspos.com:8443/#/landingPage" target="_blank" rel="noopener" class="linklike">Volta (Web)</a>
+          <a href="https://play.google.com/store/apps/details?id=com.volta.cyprus" target="_blank" rel="noopener" class="linklike">Volta (Play)</a>
+          <a href="https://goc.restuspos.com:8443/#/landingPage" target="_blank" rel="noopener" class="linklike">Goc/GMI Cafe (Web)</a>
+          <a href="https://play.google.com/store/apps/details?id=com.GOC.app" target="_blank" rel="noopener" class="linklike">Goc/GMI Cafe (Play)</a>
+          <a href="https://apps.apple.com/cy/app/gmi-cafe/id6801117106" target="_blank" rel="noopener" class="linklike">GMI Cafe (App Store)</a>
+          <a href="https://chops.restuspos.com:8443/#/offers" target="_blank" rel="noopener" class="linklike">Chopsticks (Web)</a>
+          <a href="https://play.google.com/store/apps/details?id=com.chopsticks.cyapp" target="_blank" rel="noopener" class="linklike">Chopsticks (Play)</a>
+          <a href="https://apps.apple.com/us/app/chopsticks-cyprus/id6802305806" target="_blank" rel="noopener" class="linklike">Chopsticks (App Store)</a>
+          <a href="https://chinaspice.restuspos.com:8443/#/landingPage" target="_blank" rel="noopener" class="linklike">China Spice (Web)</a>
+          <a href="https://play.google.com/store/apps/details?id=com.chinaspice.cyapp" target="_blank" rel="noopener" class="linklike">China Spice (Play)</a>
+          <a href="https://apps.apple.com/in/app/chinaspice-cyprus/id6802307146" target="_blank" rel="noopener" class="linklike">China Spice (App Store)</a>
+          <a href="https://www.papajohns.com.cy/#/landingPage" target="_blank" rel="noopener" class="linklike">Papa John's (Web)</a>
+        </div>
+      </div>
+
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Successly</span>
+          <span class="proj-tag">Mental Wellness</span>
+          <span class="status-dot">4.6/5</span>
+        </div>
+        <p class="proj-desc">AI-powered habit and goal-tracking app with personalized routine recommendations, habit streaks, and a personal-coach selection feature.</p>
+        <div class="proj-meta"><strong>Client project</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://apps.apple.com/us/app/routine-check-list-successly/id6504231813" target="_blank" rel="noopener" class="linklike">App Store →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="group-title">Kiosks &mdash; self-service, 32-inch touchscreen</p>
+      <p class="proj-desc" style="margin-bottom:14px;">One reusable Flutter kiosk codebase, deployed as five separately branded, separately published self-service ordering systems &mdash; each its own listing, built and maintained as its own project.</p>
+
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Chopsticks Kiosk</span>
+          <span class="proj-tag">Native Android</span>
+        </div>
+        <div class="proj-meta"><strong>Solo</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.outlet.restuspos" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Asado Kiosk</span>
+          <span class="proj-tag">Native Android</span>
+        </div>
+        <div class="proj-meta"><strong>Solo</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.outlet.kiosks" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Lithogyros Kiosk</span>
+          <span class="proj-tag">Native Android</span>
+        </div>
+        <div class="proj-meta"><strong>Solo</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.lithogyros.kiosks" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">SABBA Kiosk</span>
+          <span class="proj-tag">Native Android</span>
+        </div>
+        <div class="proj-meta"><strong>Solo</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.sabba.kiosks" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Malthouse Beer n' Food Kiosk</span>
+          <span class="proj-tag">Native Android</span>
+        </div>
+        <div class="proj-meta"><strong>Solo</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.malthouse.kiosks" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="group">
+      <p class="group-title">Additional native Android</p>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Goodz</span>
+          <span class="proj-tag">C2C Marketplace &middot; UAE</span>
+        </div>
+        <p class="proj-desc">Native Android (Java/Kotlin) C2C marketplace for second-hand furniture, enabling buyers to browse, chat, and negotiate prices with sellers. Built with Kotlin Coroutines, MVVM, and Dagger/Hilt; in-app chat with real-time order-status notifications and receipt generation.</p>
+        <div class="proj-meta"><strong>Led Android development</strong> &middot; Virtual Employee Pvt. Ltd.</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.ae.goodz" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj">
+        <div class="proj-top">
+          <span class="proj-name">CreditR</span>
+          <span class="proj-tag">Fintech</span>
+        </div>
+        <p class="proj-desc">Invoice financing and credit-line approval platform &mdash; application flow, credit approvals, and secure transaction handling.</p>
+        <div class="proj-meta"><strong>Solo</strong> &middot; built from scratch &middot; Inventics Software Pvt Ltd</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.ispl.creditr" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+      <div class="proj live">
+        <div class="proj-top">
+          <span class="proj-name">Online Maths</span>
+          <span class="proj-tag">Education &middot; Grades 6&ndash;12</span>
+          <span class="status-dot">4.4/5 &middot; 10,000+ DL</span>
+        </div>
+        <p class="proj-desc">Self-learning platform with a custom mathematical expression parser, course booking, live classes, and an interactive whiteboard.</p>
+        <div class="proj-meta"><strong>Solo</strong> &middot; built from scratch &middot; Zeabros India Pvt Ltd</div>
+        <div class="proj-links">
+          <a href="https://play.google.com/store/apps/details?id=com.equalsign.onlineMaths" target="_blank" rel="noopener" class="linklike">Google Play →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience">
+    <div class="section-head"><h2>Experience</h2></div>
+
+    <div class="tl-item">
+      <div class="tl-date">Aug 2022 &ndash; Present</div>
+      <div>
+        <p class="tl-role">Senior Software Engineer</p>
+        <p class="tl-co">Virtual Employee Pvt. Ltd. &middot; Noida</p>
+        <p class="tl-desc">Architecting cross-platform and native Android systems for international clients across the US, Europe, Cyprus, and UAE &mdash; from IoT hardware integrations to on-device AI to multi-brand commercial platforms.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Jun 2021 &ndash; Aug 2022</div>
+      <div>
+        <p class="tl-role">Mobile Application Developer</p>
+        <p class="tl-co">Zeabros India Pvt Ltd</p>
+        <p class="tl-desc">Owned full development lifecycle on production Android and Flutter products, including JWT-based auth and media-handling workflows.</p>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-date">Feb 2020 &ndash; May 2021</div>
+      <div>
+        <p class="tl-role">Software Engineer</p>
+        <p class="tl-co">Inventics Software Pvt Ltd</p>
+        <p class="tl-desc">Native Android development for business and education products &mdash; local persistence, API integrations, production fixes.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Master of Computer Applications (MCA) &mdash; Institute of Engineering and Technology (IET), Lucknow, 2017&ndash;2020</p>
+    <p>Open to relocation: Noida / Bengaluru / Hyderabad &middot; <a href="mailto:rahul.rai955@gmail.com">rahul.rai955@gmail.com</a></p>
+  </footer>
+
+</div>
+
+<script>
+  const btn = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  function syncLabel() {
+    const isLight = root.getAttribute('data-theme') === 'light' ||
+      (!root.getAttribute('data-theme') && window.matchMedia('(prefers-color-scheme: light)').matches);
+    btn.textContent = isLight ? 'DARK MODE' : 'LIGHT MODE';
+  }
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme') ||
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', current === 'dark' ? 'light' : 'dark');
+    syncLabel();
+  });
+  syncLabel();
+</script>
+
+</body>
+</html>
